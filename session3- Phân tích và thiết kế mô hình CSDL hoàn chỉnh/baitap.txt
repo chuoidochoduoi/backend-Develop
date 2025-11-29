@@ -1,0 +1,28 @@
+Thực thể: khóa học, giảng viên, học viên
+bên trong thực thể gồm thuộc tính 
+Khóa học (mã, tên, mô tả, học phí)
+Giảng viên (mã, họ tên, chuyên ngành, số điện thoại)
+Học viên (mã, họ tên, email, ngày đăng ký)
+Lớp học (mã lớp, thời gian học, giảng viên phụ trách, khóa học thuộc về)
+Mối quan hệ:
+khóa học có thể được sở hưu bởi nhiều giảng viên
+Giảng viên có thể sở hưu nhiều khóa học
+1 giảng viên có thể phụ trách nhiều lớp
+mỗi lớp chỉ dc phụ trách bởi 1 giảng viên
+Học viên có thể học nhiều lớp
+mỗi lớp có thể có nhiều học viên
+1 lớp học chỉ dạy về 1 khóa học
+1 khóa học có thể có nhiều lớp dạy về
+
+ 
+lí do chọn mối quan hệ:
+
+Course- student(N-N): vì course có thể có nhiều student cùng học và student có thể chọn học nhiều course .
+
+Course-teacher:(N-N) vì teacher có thể phụ trách nhiều course và course có thể được dùng dể dạy bởi nhiều teacher.
+
+student - class(N-N) vì student có thể học nhiều class cùng lúc như là học cùng lúc 2 khóa học và class thì cũng phải chứa nhiều học sinh cùng lúc.
+
+teacher-class(1-N) vì teacher có thể dạy nhiều class nhưng mỗi class chỉ dc giảng bởi 1 giáo viên.
+
+class-course(1-N) giống như teacher thì 1 class sẽ chỉ dạy về 1 course nhưng 1 course có thể được nhiều class dạy
