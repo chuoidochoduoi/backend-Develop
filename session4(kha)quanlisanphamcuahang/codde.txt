@@ -1,0 +1,38 @@
+set search_path to sales;
+
+CREATE TABLE products (
+                          id SERIAL PRIMARY KEY,
+                          product_name VARCHAR(50),
+                          category VARCHAR(50),
+                          price DECIMAL(10,2),
+                          stock_quantity INT
+);
+
+alter table products
+    add column category varchar(50);
+INSERT INTO products (product_name, category, price, stock_quantity) VALUES
+                                                        ('Laptop Dell', 'Electronics', 1500.00, 5),
+                                                        ('Chuột Logitech', 'Electronics', 25.50, 50),
+                                                        ('Bàn phím Razer', 'Electronics', 120.00, 20),
+                                                        ('Tủ lạnh LG', 'Home Appliances', 800.00, 3),
+                                                        ('Máy giặt Samsung', 'Home Appliances', 600.00, 2);
+
+insert into products (product_name, category, price, stock_quantity)
+values ('Điều hòa Panasonic', 'Thiết bị gia dụng',  400,  10);
+
+
+
+update products set stock_quantity = 7 where product_name ilike 'Laptop Dell';
+
+
+delete from products where stock_quantity=0;
+
+select * from products order by price asc;
+
+select distinct category from products;
+
+select * from products where price between 100 and 1000;
+
+select * from products where product_name ilike '%lg%'or product_name ilike '%samsung%';
+
+select * from products limit 2 offset 1
