@@ -1,0 +1,35 @@
+
+
+set search_path to university;
+
+create table students(
+                         id serial primary key ,
+                         name varchar(50) not null ,
+                         age int check ( age >0 ),
+                         major varchar(50),
+                         gpa decimal(3,2)
+);
+
+
+insert into students(name,age,major,gpa)
+values ('Hùng',23,'Hóa học',3.4);
+
+
+insert into students(name,age,major,gpa)
+values ('Bình',25,'Hóa học',2.4);
+
+Update students set gpa=3.6 where students.name='Bình';
+
+
+select name,major from students order by gpa desc;
+
+select distinct from students where major='CNTT';
+
+
+select * from students where gpa between 3.0 and 3.6
+
+select * from students where name ilike 'c%';
+
+select * from  students   order by name asc limit 3;
+
+select * from  students   limit 3 offset 1
