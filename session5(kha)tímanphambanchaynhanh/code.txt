@@ -1,0 +1,26 @@
+SELECT p.category
+FROM product p
+JOIN (
+    SELECT 
+        product_id,
+        SUM(total_price) AS total_revenue
+    FROM orders
+    GROUP BY product_id
+) t ON p.id = t.product_id
+WHERE t.total_revenue = (
+        SELECT MAX(sum_price)
+        FROM (
+            SELECT SUM(total_price) AS sum_price
+            FROM orders
+            GROUP BY product_id
+        ) x
+)
+
+INTERSECT
+
+SELECT 
+    p.category
+FROM orders o
+JOIN product p ON o.product_id = p.id
+GROUP BY p.category
+HAVING SUM(o.total_price) > 3000;
