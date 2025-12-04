@@ -1,0 +1,49 @@
+                                                                  (3, 'Mouse', 2, 50.00),
+                                                                      (3, 'Keyboard', 1, 700.00);
+
+
+select c.customer_name,o.order_date,o.total_amount from orders o join customers c on c.customer_id = o.customer_id
+
+
+
+SELECT SUM(total_amount) AS total_revenue FROM orders o;
+
+SELECT AVG(total_amount) AS avg_order_value FROM orders;
+
+SELECT MAX(total_amount) AS max_order FROM orders;
+
+SELECT MIN(total_amount) AS min_order FROM orders;
+
+SELECT COUNT(order_id) AS total_orders FROM orders;
+
+
+SELECT c.city, SUM(o.total_amount) AS city_total
+FROM customers c
+         JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.city
+HAVING SUM(o.total_amount) > 10000;
+
+
+SELECT c.customer_name, o.order_date, i.product_name, i.quantity, i.price
+FROM order_items i
+         JOIN orders o ON i.order_id = o.order_id
+         JOIN customers c ON o.customer_id = c.customer_id
+ORDER BY o.order_date;
+
+
+SELECT customer_name
+FROM customers
+WHERE customer_id = (
+    SELECT customer_id
+    FROM orders
+    GROUP BY customer_id
+    ORDER BY SUM(total_amount) DESC
+    LIMIT 1
+);
+
+
+SELECT city FROM customers
+UNION
+SELECT c.city
+FROM orders o
+         JOIN customers c ON o.customer_id = c.customer_id;
