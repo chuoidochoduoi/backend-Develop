@@ -1,0 +1,42 @@
+
+CREATE TABLE Department (
+                            id SERIAL PRIMARY KEY,
+                            name VARCHAR(50)
+);
+
+CREATE TABLE Employee (
+                          id SERIAL PRIMARY KEY,
+                          full_name VARCHAR(100),
+                          department_id INT, -- Liên kết với Department.id
+                          salary NUMERIC(10, 2)
+);
+
+INSERT INTO Department (name) VALUES
+                                  ('Kế toán'),
+                                  ('Nhân sự'),
+                                  ('Kỹ thuật'),
+                                  ('Marketing'),
+                                  ('Bán hàng');
+INSERT INTO Employee (full_name, department_id, salary) VALUES
+                                                            ('Nguyễn Văn A', 1, 12000000),
+                                                            ('Trần Thị B', 2, 15000000),
+                                                            ('Lê Văn C', 3, 18000000),
+                                                            ('Phạm Thị D', 4, 13000000),
+                                                            ('Hoàng Văn E', 5, 11000000),
+                                                            ('Ngô Thị F', 3, 17000000),
+                                                            ('Vũ Văn G', 1, 14000000),
+                                                            ('Đỗ Thị H', 2, 12500000),
+                                                            ('Phan Văn I', 4, 16000000),
+                                                            ('Bùi Thị K', 5, 13500000);
+
+select e.*,d.name from  employee e join Department D on e.department_id = D.id
+
+
+select d.name,avg(salary) from  employee e join Department D on e.department_id = D.id group by d.name
+
+select d.name,avg(salary) from  employee e join Department D on e.department_id = D.id group by d.name having avg(e.salary) >10000000
+
+select e.*,d.name from  employee e left join Department D on e.department_id = D.id where e.id isnull
+
+
+

@@ -1,0 +1,24 @@
+
+CREATE TABLE OrderInfo (
+                           id SERIAL PRIMARY KEY,
+                           customer_id INT,
+                           order_date DATE,
+                           total NUMERIC(10, 2),
+                           status VARCHAR(20)
+);
+
+INSERT INTO OrderInfo (customer_id, order_date, total, status)
+VALUES
+    (1, '2024-11-10', 1500000.00, 'pending'),
+    (2, '2024-11-12', 3200000.50, 'completed'),
+    (3, '2024-11-15', 850000.00, 'cancelled'),
+    (4, '2024-11-18', 4200000.75, 'pending'),
+    (5, '2024-11-20', 2300000.00, 'completed');
+
+select * from OrderInfo where total >500000
+
+select * from  orderinfo where order_date between '2024-10-1' and '2024-10-30'
+
+select * from  orderinfo where  status = 'completed'
+
+select * from  orderinfo order by order_date desc limit 2

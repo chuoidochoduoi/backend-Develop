@@ -1,0 +1,23 @@
+
+CREATE TABLE Customer (
+                          id SERIAL PRIMARY KEY,
+                          name VARCHAR(100),
+                          email VARCHAR(100),
+                          phone VARCHAR(20),
+                          points INT
+);
+INSERT INTO Customer (name, email, phone, points)
+VALUES
+    ('Nguyen Van A', 'a.nguyen@example.com', '0901234567', 120),
+    ('Tran Thi B', 'b.tran@example.com', '0987654321', 300),
+    ('Le Hoang C', 'c.le@example.com', '0912345678', 50),
+    ('Pham Minh D', 'd.pham@example.com', '0935678910', 450),
+    ('Vo Thi E', 'e.vo@example.com', '0971112233', 200),
+    ('Dang Quoc F', 'f.dang@example.com', '0909998888', 80),
+    ('Hoang My G', 'g.hoang@example.com', '0963332211', 150);
+
+select distinct name from Customer order by name desc
+
+select * from customer where email is null order by name desc
+
+select * from customer order by  points desc,name desc  offset 1 limit 3

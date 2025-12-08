@@ -1,0 +1,17 @@
+INSERT INTO employees (full_name, department, salary, hire_date)
+VALUES
+    ('Nguyen Van A', 'Sales', 12000000, '2024-03-15'),
+    ('Tran Thi B', 'Marketing', 15000000, '2023-11-02'),
+    ('Le Hoang an C', 'IT', 20000000, '2022-07-19'),
+    ('Pham My D', 'HR', 10000000, '2024-01-10'),
+    ('Vo Minh An E', 'Finance', 18000000, '2023-05-30'),
+    ('Dang Thi F', 'Operations', 13000000, '2024-06-25');
+
+update employees set salary = salary*1.1 where department = 'IT'
+
+delete from employees where salary<6000000;
+
+select * from employees where full_name ilike '%an%'
+
+select * from employees where hire_date between '2023-01-01' and '2023-12-31'
+

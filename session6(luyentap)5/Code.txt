@@ -1,0 +1,32 @@
+
+CREATE TABLE Course (
+                        id SERIAL PRIMARY KEY,
+                        title VARCHAR(100),
+                        instructor VARCHAR(50),
+                        price NUMERIC(10, 2),
+                        duration INT -- số giờ học
+);
+
+INSERT INTO Course (title, instructor, price, duration)
+VALUES
+    ('Python cơ bản', 'Nguyen Van A', 1200000.00, 40),
+    ('Java nâng cao', 'Tran Thi B', 1800000.00, 60),
+    ('Lập trình Web với HTML & CSS', 'Le Hoang C', 900000.00, 30),
+    ('SQL cho người mới', 'Pham Minh D', 700000.00, 25),
+    ('JavaScript từ Zero đến Hero', 'Vo Thi E', 1500000.00, 45),
+    ('Phân tích dữ liệu với Python', 'Dang Quoc F', 2200000.00, 50),
+    ('Machine Learning cơ bản', 'Hoang My G', 3500000.00, 80),
+    ('ReactJS hiện đại', 'Nguyen Thanh H', 2000000.00, 55),
+    ('C# .NET căn bản', 'Tran Van I', 1700000.00, 50),
+    ('Thiết kế cơ sở dữ liệu', 'Le Bao K', 1300000.00, 35);
+
+
+update course set price = price*1.5 where duration >30
+
+delete from Course where title ilike '%Demo%'
+
+select * from  course where title ilike  '%SQL%'
+
+select * from course where price between 500000 and 2000000 order by price desc
+
+
