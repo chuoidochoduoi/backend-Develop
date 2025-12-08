@@ -1,0 +1,16 @@
+INSERT INTO Product(name, category, price, stock)
+VALUES
+    ('Laptop X200', 'Electronics', 15000000, 12),
+    ('Tai nghe Bass Pro', 'Accessories', 650000, 40),
+    ('Bàn phím Cơ RGB', 'Electronics', 1200000, 25),
+    ('Sách Lập trình Python', 'Books', 180000, 30),
+    ('Chuột Gaming G52', 'Accessories', 450000, 50);
+
+select * from Product
+
+
+select * from Product order by price desc limit 3
+
+select * from Product where category ilike 'dien tu' and price <10000000
+
+select * from Product order by stock asc
