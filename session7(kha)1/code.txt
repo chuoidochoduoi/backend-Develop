@@ -1,0 +1,54 @@
+set search_path to sales_schema
+CREATE TABLE book (
+                      book_id SERIAL PRIMARY KEY,
+                      title VARCHAR(255),
+                      author VARCHAR(100),
+                      genre VARCHAR(50),
+                      price DECIMAL(10,2),
+                      description TEXT,
+                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO book (title, author, genre, price, description)
+SELECT
+    'Book Title ' || i AS title,
+    'Author ' || ((random() * 100)::int + 1) AS author,
+    (ARRAY['Fantasy','Sci-Fi','Romance','Horror','Mystery','Thriller','Adventure','Comedy','Drama'])[(random() * 8 + 1)::int] AS genre,
+    (random() * 90 + 10)::numeric(10,2) AS price,
+    'This is a sample description for book number ' || i AS description
+FROM generate_series(1, 1000) AS s(i);
+
+
+explain analyse select * from book where genre ='Fantasy'
+
+-- Btree
+create index idx_genre on book(genre);
+
+create index idx_genre2 on book using hash (title)
+
+CREATE INDEX idx_book_title_gin
+    ON book USING GIN (to_tsvector('simple', title));
+
+set search_path to sales_schema
+SELECT * FROM pg_extension;
+ create index idx_genre on book(title );
+ create index idex_price on book(price);
+
+
+explain analyse select * from book where title='Author 89' and price= 65.88
+   -- Planning Time: 1.403 ms
+--Execution Time: 0.110 ms
+ --   Planning Time: 1.283 ms
+--Execution Time: 0.080 ms
+   -- Planning Time: 1.095 ms
+--Execution Time: 0.125 ms
+    --Planning Time: 1.302 ms
+--Execution Time: 0.047 ms
+
+CLUSTER book USING idx_genre;
+
+explain analyse select * from book where genre ='Fantasy'
+  --  Planning Time: 1.351 ms
+--Execution Time: 0.088 ms
+--Planning Time: 1.716 ms
+--Execution Time: 0.071 ms

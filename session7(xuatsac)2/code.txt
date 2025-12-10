@@ -1,0 +1,101 @@
+
+INSERT INTO patients (full_name, phone, city, symbols) VALUES
+                                                            ('Nguyễn Văn An', '0901112222', 'Hà Nội', '{"sốt", "đau họng"}'),
+                                                            ('Trần Thị Bình', '0902223333', 'TP.HCM', '{"ho kéo dài", "mệt mỏi"}'),
+                                                            ('Lê Văn Cường', '0903334444', 'Đà Nẵng', '{"đau dạ dày"}'),
+                                                            ('Phạm Thị Dung', '0904445555', 'Hải Phòng', '{"phát ban da"}'),
+                                                            ('Hoàng Văn Em', '0905556666', 'Cần Thơ', '{"đau đầu", "chóng mặt"}');
+
+INSERT INTO doctors (full_name, department) VALUES
+                                                ('Bác sĩ A', 'Khoa Nội'),
+                                                ('Bác sĩ B', 'Khoa Ngoại'),
+                                                ('Bác sĩ C', 'Khoa Da liễu'),
+                                                ('Bác sĩ D', 'Khoa Nhi'),
+                                                ('Bác sĩ E', 'Khoa Răng Hàm Mặt');
+
+INSERT INTO appointments (patient_id, doctor_id, appointment_date, diagnosis, fee) VALUES
+-- Cuộc hẹn 1-5 (Các bệnh nhân khám lần đầu)
+(1, 1, '2025-11-01', 'Viêm họng cấp', 250000.00),
+(2, 2, '2025-11-01', 'Viêm phế quản', 300000.00),
+(3, 1, '2025-11-02', 'Viêm loét dạ dày', 350000.00),
+(4, 3, '2025-11-02', 'Dị ứng tiếp xúc', 400000.00),
+(5, 4, '2025-11-03', 'Rối loạn tiền đình', 300000.00),
+-- Cuộc hẹn 6-10 (Khám lại hoặc bệnh nhân khác)
+(1, 1, '2025-11-04', 'Tái khám viêm họng', 150000.00),
+(2, 2, '2025-11-05', 'Tái khám viêm phế quản', 180000.00),
+(4, 3, '2025-11-06', 'Tái khám dị ứng', 200000.00),
+(3, 5, '2025-11-07', 'Khám răng định kỳ', 450000.00),
+(5, 1, '2025-11-08', 'Kiểm tra huyết áp', 220000.00);
+
+INSERT INTO patients (full_name, phone, city, symbols)
+SELECT
+    -- Tạo tên giả ngẫu nhiên
+    'Bệnh nhân ' || LPAD(i::text, 5, '0'),
+    -- Tạo số điện thoại giả
+    '09' || LPAD((i * 12345)::text, 8, '0'),
+    -- Chọn thành phố ngẫu nhiên
+    CASE (i % 5)
+        WHEN 0 THEN 'Hà Nội'
+        WHEN 1 THEN 'TP.HCM'
+        WHEN 2 THEN 'Đà Nẵng'
+        WHEN 3 THEN 'Cần Thơ'
+        ELSE 'Hải Phòng'
+        END,
+    -- Tạo triệu chứng ngẫu nhiên (chỉ là mẫu cố định)
+    ARRAY[
+        CASE (i % 3)
+            WHEN 0 THEN 'Sốt'
+            WHEN 1 THEN 'Đau họng'
+            ELSE 'Ho'
+            END
+        ]
+FROM generate_series(1, 10000) AS i;
+
+--explain analyse select * from book where genre ='Fantasy'
+
+create index on patients(phone)
+--Planning Time: 0.069 ms
+--    Execution Time: 0.734 ms
+explain analyse select * from patients where phone = '0905556666'
+
+
+   -- Planning Time: 0.092 ms
+--Execution Time: 0.039 ms
+
+create index hash_city on patients using hash (city)
+
+
+   -- Planning Time: 0.078 ms
+--Execution Time: 0.022 ms
+
+explain analyse select * from patients where city = 'Hà Nội'
+
+ --   Planning Time: 0.066 ms
+--Execution Time: 0.016 ms
+
+
+CREATE EXTENSION pg_trgm; CREATE EXTENSION btree_gin;
+
+
+create index  gin_sympol on patients using gin(symbols)
+set search_path to sales_schema
+
+-- fee không phải mảng ko chạy dc mà đề yêu cầu GiST: tìm cuộc hẹn theo khoảng phí (fee)
+create index gist_fee on appointments using gist(fee)
+
+
+create index btree_fee on appointments using btree(appointment_date)
+
+CLUSTER appointments USING btree_fee;
+
+
+create view a4 as select p.patient_id,sum(a.fee) as fee from patients p join appointments a on p.patient_id = a.patient_id group by p.patient_id order by fee desc limit 3
+
+
+create view b4 as select   p.patient_id,count(appointment_id) as qAppointment from patients p join appointments a on p.patient_id = a.patient_id group by p.patient_id
+
+CREATE VIEW v_patient_city AS
+SELECT patient_id, full_name, city FROM patients
+        WITH CHECK OPTION;
+
+update v_patient_city set city = 'TP.HCM' where patient_id =1

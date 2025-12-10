@@ -1,0 +1,48 @@
+
+set search_path to sales_schema
+CREATE TABLE customer (
+                          customer_id SERIAL PRIMARY KEY,
+                          full_name   VARCHAR(100),
+                          email       VARCHAR(100),
+                          phone       VARCHAR(15)
+);
+
+CREATE TABLE orders (
+                        order_id     SERIAL PRIMARY KEY,
+                        customer_id  INT REFERENCES customer(customer_id),
+                        total_amount DECIMAL(10,2),
+                        order_date   DATE
+);
+INSERT INTO customer (full_name, email, phone)
+SELECT
+    'Customer ' || i,
+    'customer' || i || '@example.com',
+    '090' || LPAD(i::text, 7, '0')
+FROM generate_series(1, 1000) AS s(i);
+
+
+INSERT INTO orders (customer_id, total_amount, order_date)
+SELECT
+    (RANDOM() * 999 + 1)::INT,
+    ROUND((RANDOM() * 490 + 10)::numeric, 2),
+    DATE '2020-01-01' + (RANDOM() * 1500)::INT
+FROM generate_series(1, 1000);
+
+create view V_order_summary as
+select c.full_name,o.total_amount,o.order_date from orders o join customer c on c.customer_id = o.customer_id
+
+create view V_order_summary2 as
+select o.*,
+       c.full_name,
+       c.email,
+       c.phone from orders o join customer c on c.customer_id = o.customer_id
+
+
+
+create view v_monthly_sales as
+    select extract(month from order_date) as month,sum(total_amount) from orders group by (extract(month from order_date)) order by month
+--DROP VIEW  ;
+
+--DROP MATERIALIZED VIEW ;
+    -- VIEW Xóa view ảo, không xóa dữ liệu thật.
+    -- MATERIALIZED VIEW Xóa materialized view, tức là xóa luôn “bảng dữ liệu được cache”.

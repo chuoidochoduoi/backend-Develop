@@ -1,0 +1,68 @@
+
+
+
+CREATE TABLE customers (
+                           customer_id SERIAL PRIMARY KEY,
+                           full_name VARCHAR(100),
+                           email VARCHAR(100) UNIQUE,
+                           city VARCHAR(50)
+);
+
+CREATE TABLE products (
+                          product_id SERIAL PRIMARY KEY,
+                          product_name VARCHAR(100),
+                          category TEXT[],
+                          price NUMERIC(10,2)
+);
+
+CREATE TABLE orders (
+                        order_id SERIAL PRIMARY KEY,
+                        customer_id INT REFERENCES customers(customer_id),
+                        product_id INT REFERENCES products(product_id),
+                        order_date DATE,
+                        quantity INT
+);
+
+
+
+create index btree on customers(email)
+create index hashx on customers using hash(city)
+create index ginx on products   using gin(category)
+create index gistx on products using gist(price)
+
+EXPLAIN ANALYZE
+SELECT * FROM customers
+WHERE email = 'a.nguyen@example.com';
+
+EXPLAIN ANALYZE
+SELECT * FROM products
+WHERE category @> ARRAY['Electronics'];
+
+EXPLAIN ANALYZE
+SELECT * FROM products
+WHERE price BETWEEN 500 AND 1000;
+CREATE INDEX idx_orders_order_date ON orders(order_date);
+
+CLUSTER orders USING idx_orders_order_date;
+
+CREATE OR REPLACE VIEW top3_customers AS
+SELECT
+    c.customer_id,
+    c.full_name,
+    SUM(o.quantity) AS total_items
+FROM orders o
+         JOIN customers c ON o.customer_id = c.customer_id
+GROUP BY c.customer_id, c.full_name
+ORDER BY total_items DESC
+LIMIT 3;
+
+
+CREATE OR REPLACE VIEW revenue_by_product AS
+SELECT
+    p.product_id,
+    p.product_name,
+    SUM(o.quantity * p.price) AS total_revenue
+FROM orders o
+         JOIN products p ON o.product_id = p.product_id
+GROUP BY p.product_id, p.product_name
+ORDER BY total_revenue DESC;
