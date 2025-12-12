@@ -1,0 +1,18 @@
+
+CREATE TABLE order_detail (
+                              id SERIAL PRIMARY KEY,
+                              order_id INT,
+                              product_name VARCHAR(100),
+                              quantity INT,
+                              unit_price NUMERIC
+);
+
+create or replace procedure  calculate_order_total(order_id_input INT, OUT total NUMERIC)
+language plpgsql
+as $$
+    BEGIN
+    total = (select sum(unit_price* quantity) from order_detail  where order_id= order_id_input group by order_id);
+    end;
+    $$;
+
+call calculate_order_total(101,null)
