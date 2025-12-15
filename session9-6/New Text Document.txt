@@ -1,0 +1,10 @@
+create or replace procedure update_product_price(p_category_id INT, p_increase_percent NUMERIC)
+language  plpgsql
+AS $$
+    begin
+         update products set price = price* p_increase_percent where category_id =p_category_id;
+    end;
+    $$
+
+
+call update_product_price(2,1.2)

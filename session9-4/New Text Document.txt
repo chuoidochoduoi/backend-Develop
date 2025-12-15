@@ -1,0 +1,1 @@
+create view CustomerSales  as  SELECT  sum(amount) as amount from sales group by customer_id

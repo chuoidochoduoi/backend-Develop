@@ -1,0 +1,6 @@
+
+create index on orders(customer_id)
+
+explain analyse SELECT * FROM Orders WHERE customer_id = '999'
+
+sử dung index btruee nhanh hơn 0.3 s

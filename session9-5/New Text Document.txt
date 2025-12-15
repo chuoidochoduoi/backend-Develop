@@ -1,0 +1,11 @@
+
+create or replace procedure  calculate_total_sales(start_date DATE, end_date DATE, OUT total NUMERIC)
+language plpgsql
+AS $$
+    BEGIN
+       SELECT  sum(amount) into total  FROM sales WHERE sale_date between start_date and end_date
+        
+    end;
+    $$
+
+    CALL calculate_total_sales('2024-01-01', '2024-12-31', NULL);

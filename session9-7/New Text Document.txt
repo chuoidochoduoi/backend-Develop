@@ -1,0 +1,20 @@
+
+create or replace procedure add_order(p_customer_id INT, p_amount NUMERIC)
+language plpgsql
+as $$
+    declare  v_id int;
+BEGIN
+
+    SELECT customer_id
+    into v_id
+    FROM customer
+    WHERE customer_id = p_customer_id;
+
+    INSERT INTO orders (customer_id, amount, order_date)
+    VALUES (p_customer_id, p_amount, CURRENT_DATE);
+
+EXCEPTION
+    WHEN no_data_found THEN
+        RAISE NOTICE 'Customer not found';
+END;
+    $$

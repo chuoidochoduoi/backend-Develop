@@ -1,0 +1,3 @@
+create index on users using hash(email)
+
+explain analyse SELECT * FROM users WHERE email = 'example2222@example.com';
