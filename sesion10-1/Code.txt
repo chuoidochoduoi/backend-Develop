@@ -1,0 +1,15 @@
+
+create or replace function update_last_modified()
+returns trigger
+LANGUAGE plpgsql
+AS $$
+    BEGIN
+        new.last_modified := current_date;
+        return new;
+    end;
+    $$
+
+create or replace trigger newtriger
+    before update on products
+    for each row
+    execute FUNCTION update_last_modified()

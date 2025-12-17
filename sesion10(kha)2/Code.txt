@@ -1,0 +1,32 @@
+create or replace function check_credit_limit()
+    returns trigger
+    language plpgsql
+AS $$
+
+    declare
+    v_credit_limit NUMERIC;
+
+BEGIN
+    SELECT credit_limit
+    INTO v_credit_limit
+    FROM customers
+    WHERE id = NEW.customer_id;
+
+    IF v_credit_limit IS NULL THEN
+        RAISE EXCEPTION 'Customer % does not exist', NEW.customer_id;
+    END IF;
+
+    IF NEW.total_amount > v_credit_limit THEN
+        RAISE EXCEPTION
+            'Order total (%.2f) exceeds customer credit limit (%.2f)',
+            NEW.total_amount, v_credit_limit;
+    END IF;
+
+    RETURN NEW;end;
+
+$$;
+
+
+create or replace trigger aaaa
+    before insert on orders
+    for each ROW EXECUTE FUNCTION check_credit_limit()

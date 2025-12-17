@@ -1,0 +1,34 @@
+
+
+create or replace function check_stock()
+    returns trigger
+    language plpgsql
+AS $$
+BEGIN
+    CASE TG_OP
+        WHEN 'INSERT' THEN
+            UPDATE sales_schema.products
+            SET stock = stock - NEW.quantity
+            WHERE id = NEW.product_id;
+            RETURN NEW;
+
+        WHEN 'UPDATE' THEN
+            UPDATE sales_schema.products
+            SET stock = stock + OLD.quantity - NEW.quantity
+            WHERE id = NEW.product_id;
+            RETURN NEW;
+
+        WHEN 'DELETE' THEN
+            UPDATE sales_schema.products
+            SET stock = stock + OLD.quantity
+            WHERE id = OLD.product_id;
+            RETURN OLD;
+        END CASE;
+end;
+
+$$;
+
+
+create or replace trigger check_st
+    BEFORE DELETE or INSERT or UPDATE on orders
+    FOR each row execute  FUNCTION check_stock()
