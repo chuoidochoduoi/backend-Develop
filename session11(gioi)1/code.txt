@@ -1,0 +1,71 @@
+
+CREATE OR REPLACE PROCEDURE place_order_multi()
+    LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_order_id INT;
+    v_stock INT;
+    v_total NUMERIC := 0;
+BEGIN
+    -- 1. Kiểm tra & khóa tồn kho sản phẩm 1
+    SELECT stock
+    INTO v_stock
+    FROM products
+    WHERE product_id = 1
+        FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Product 1 does not exist';
+    ELSIF v_stock < 2 THEN
+        RAISE EXCEPTION 'Product 1 out of stock';
+    END IF;
+
+    -- 2. Kiểm tra & khóa tồn kho sản phẩm 2
+    SELECT stock
+    INTO v_stock
+    FROM products
+    WHERE product_id = 2
+        FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Product 2 does not exist';
+    ELSIF v_stock < 1 THEN
+        RAISE EXCEPTION 'Product 2 out of stock';
+    END IF;
+
+    -- 3. Tạo đơn hàng
+    INSERT INTO orders(customer_name, created_at, total_amount)
+    VALUES ('Nguyen Van A', CURRENT_DATE, 0)
+    RETURNING order_id INTO v_order_id;
+
+    -- 4. Thêm order_items
+    INSERT INTO order_items(order_id, product_id, quantity, subtotal)
+    SELECT v_order_id, product_id, quantity, price
+    FROM (
+             SELECT 1 AS product_id, 2 AS quantity
+             UNION ALL
+             SELECT 2, 1
+         ) s
+             JOIN products p USING (product_id);
+
+    -- 5. Giảm tồn kho
+    UPDATE products SET stock = stock - 2 WHERE product_id = 1;
+    UPDATE products SET stock = stock - 1 WHERE product_id = 2;
+
+    -- 6. Tính tổng tiền
+    SELECT SUM(quantity * subtotal)
+    INTO v_total
+    FROM order_items
+    WHERE order_id = v_order_id;
+
+    -- 7. Cập nhật tổng tiền
+    UPDATE orders
+    SET total_amount = v_total
+    WHERE order_id = v_order_id;
+
+    COMMIT;
+END;
+$$;
+
+
+call place_order_multi();

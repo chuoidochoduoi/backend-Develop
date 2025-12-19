@@ -1,0 +1,18 @@
+
+set search_path to tester;
+CREATE TABLE accounts (
+                          account_id SERIAL PRIMARY KEY,
+                          owner_name VARCHAR(100),
+                          balance NUMERIC(10,2)
+);
+
+INSERT INTO accounts (owner_name, balance)
+VALUES ('A', 500.00), ('B', 300.00);
+
+
+begin ;
+update accounts set balance = balance+50 where owner_name='A';
+update accounts set balance = balance-50 where owner_name='B';
+commit ;
+-- neu sai
+rollback;

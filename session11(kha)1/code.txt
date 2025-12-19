@@ -1,0 +1,33 @@
+
+set search_path to tester
+CREATE TABLE flights (
+                         flight_id SERIAL PRIMARY KEY,
+                         flight_name VARCHAR(100),
+                         available_seats INT
+);
+CREATE TABLE bookings (
+                          booking_id SERIAL PRIMARY KEY,
+                          flight_id INT REFERENCES flights(flight_id),
+                          customer_name VARCHAR(100)
+);
+INSERT INTO flights (flight_name, available_seats)
+VALUES
+    ('VN123', 3),
+    ('VN456', 2);
+
+-- tạo giao dịch chuển 250 $ từ account 1 => account 2
+-- BEGIN ;
+-- --  kiểm tra số dư tài khoản gửi
+--     if (select balance from accounts where account_id = 1) < 250 then
+--         RAISE EXCEPTION 'Insufficient funds';
+--     end if;
+
+-- COMMIT / ROLLBACK
+ROLLBACK;
+
+begin;
+update flights set available_seats = available_seats-1 where flight_name = 'VN123';
+
+insert into Bookings(flight_id, customer_name) values (1,'Nguyen Van A');
+
+commit

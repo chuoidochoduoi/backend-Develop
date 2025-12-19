@@ -1,0 +1,31 @@
+BEGIN;
+
+SELECT balance
+FROM accounts
+WHERE account_id = 1
+FOR UPDATE;
+
+DO $$
+DECLARE
+    v_balance NUMERIC;
+BEGIN
+    SELECT balance
+    INTO v_balance
+    FROM accounts
+    WHERE account_id = 1;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Account does not exist';
+    ELSIF v_balance < 500 THEN
+        RAISE EXCEPTION 'Insufficient balance';
+    END IF;
+END $$;
+
+UPDATE accounts
+SET balance = balance - 500
+WHERE account_id = 1;
+
+INSERT INTO transactions(account_id, amount, transaction_type)
+VALUES (1, 500, 'withdraw');
+
+COMMIT;
