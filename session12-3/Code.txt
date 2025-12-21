@@ -1,0 +1,15 @@
+
+
+create or replace function stock_product()
+    returns trigger
+    language plpgsql
+as $$
+BEGIN
+    update products set stock= stock - new.quantity where product_id=new.product_id;
+    return new;
+end;
+$$;
+
+create or replace trigger bbb
+    after insert on sales
+    for each row execute function stock_product()

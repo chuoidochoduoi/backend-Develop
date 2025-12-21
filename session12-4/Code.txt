@@ -1,0 +1,20 @@
+
+create or replace function total()
+returns trigger
+language plpgsql
+as $$
+    declare
+        v_price numeric;
+    begin
+
+        select price into v_price from products where product_id = new.product_id;
+        NEW.total_amount := NEW.quantity * v_price;
+    return new;
+        end;
+    $$;
+
+create or replace trigger bbb
+    before insert on orders
+    for each row execute function total();
+
+insert into orders(product_id, quantity)  values (1,2)

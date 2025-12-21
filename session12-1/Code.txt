@@ -1,0 +1,16 @@
+create or replace function cus_log()
+returns trigger
+language plpgsql
+as $$
+    begin
+        insert INTO customer_log(customer_name, action_time) VALUES (new.name,current_timestamp);
+        return new;
+    end;
+    $$;
+
+create or replace trigger aaa
+    after INSERT on customers
+    FOR EACH row EXECUTE function cus_log()
+
+INSERT INTO customers (name, email)
+VALUES ('Teo Nguyen', 'teo@example.com');
